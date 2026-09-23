@@ -1,379 +1,696 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="proposal-version" content="v4.1-nav-fix">
-  <title>쿠팡 광고 운영 전략 제안서</title>
-  <meta name="description" content="쿠팡 광고 기본 구조부터 브랜드 목적별 운영 전략과 문제점 개선 방안까지">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>삼진어묵 명절 광고 성과 리포트</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍢</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<style>
+:root{
+  --ink:#13293D; --ink-2:#1D3A54; --ink-soft:#8FA3B6;
+  --paper:#F5F6F4; --card:#FFFFFF; --line:#E1E5E3; --text:#1B2630; --muted:#66727D;
+  --chu:#C8892F; --chu-soft:#F4E6CF; --seol:#4F7398; --seol-soft:#DCE6EF;
+  --good:#1E7F64; --good-soft:#DDF0E9; --bad:#B8432F; --bad-soft:#F6E0DA;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  background:var(--paper);color:var(--text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum"}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--chu);outline-offset:2px}
+
+/* layout */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh;background:linear-gradient(90deg,var(--ink) 248px,var(--paper) 248px)}
+.side{background:var(--ink);color:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:28px 18px 20px}
+.brand{padding:0 10px 26px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.brand span{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:20px}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D4DE;text-decoration:none;font-weight:500;position:relative}
+.nav a:hover{background:var(--ink-2);color:#fff}
+.nav a.on{background:var(--ink-2);color:#fff;font-weight:700}
+.nav a.on::before{content:"";position:absolute;left:-18px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--chu)}
+.nav a small{margin-left:auto;font-size:11px;color:var(--ink-soft);font-weight:600;border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:0 7px}
+.side-foot{margin-top:auto;font-size:12px;color:var(--ink-soft);padding:0 10px;line-height:1.6}
+.side-foot i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+
+.main{padding:36px 44px 60px;max-width:1320px;width:100%;min-width:0}
+.page{display:none}
+.page.on{display:block;animation:pagein .35s ease}
+@keyframes pagein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.on{animation:none}}
+
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px}
+.head h1{margin:0;font-size:28px;letter-spacing:-.025em;font-weight:800;line-height:1.25}
+.head p{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+.seg{display:inline-flex;background:#E7EAE8;border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap}
+.seg button.on{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(19,41,61,.12)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl label{font-size:13px;color:var(--muted);font-weight:600}
+select{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:14px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+.panel h2{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.panel .sub{margin:0 0 16px;color:var(--muted);font-size:13px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.mt{margin-top:18px}
+.chart{position:relative;height:320px}
+.chart.tall{height:380px}
+
+/* overview hero */
+.hero{background:var(--ink);color:#fff;border-radius:14px;padding:34px 36px;display:grid;grid-template-columns:1.25fr 1fr;gap:34px;align-items:center}
+.hero h2{margin:0;font-size:30px;line-height:1.35;font-weight:800;letter-spacing:-.03em}
+.hero p{margin:12px 0 0;color:#B7C5D2;font-size:14px}
+.duel{display:grid;gap:14px}
+.duel-row{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:center}
+.duel-row>span{font-size:13px;color:#B7C5D2;font-weight:600}
+.bars{display:grid;gap:5px}
+.bar{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;font-size:12px}
+.bar em{font-style:normal;color:#B7C5D2}
+.bar .track{height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;border-radius:5px}
+.bar b{font-weight:700;font-size:13px;min-width:78px;text-align:right}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.kpi .k{font-size:13px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:6px;line-height:1.2}
+.kpi .c{margin-top:6px;font-size:13px;color:var(--muted)}
+.delta{display:inline-block;font-weight:700;font-size:12.5px;padding:1px 7px;border-radius:20px}
+.delta.up{background:var(--good-soft);color:var(--good)}
+.delta.down{background:var(--bad-soft);color:var(--bad)}
+.delta.neutral{background:#ECEFF1;color:var(--muted)}
+.insights{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.insights li{padding:12px 14px 12px 16px;border-left:3px solid var(--chu);background:#FAFAF8;border-radius:0 8px 8px 0;font-size:14px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12.5px;color:var(--muted);font-weight:700;background:#FAFBFA;position:sticky;top:0}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+tbody tr:hover{background:#FAFBF9}
+tfoot td{font-weight:800;border-top:2px solid var(--text);border-bottom:0}
+th.sort{cursor:pointer;user-select:none}
+th.sort:hover{color:var(--text)}
+th.sort.on::after{content:" ▾";color:var(--chu)}
+th.sort.on.asc::after{content:" ▴"}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px;vertical-align:1px}
+.tag.v{background:var(--ink);color:#fff}
+.tag.i{background:#E4E8EA;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* creative ranking */
+.rank-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.rank{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rank-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.rank-h h3{margin:0;font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+.rank-h h3 i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.rank.best .rank-h{background:linear-gradient(0deg,#fff, #F3F9F6)}
+.rank.worst .rank-h{background:linear-gradient(0deg,#fff, #FBF3F1)}
+.rank-h span{font-size:12.5px;color:var(--muted)}
+.item{display:grid;grid-template-columns:28px 84px 1fr;gap:14px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .no{font-size:22px;font-weight:800;color:#C2CAD0;text-align:center}
+.item:first-child .no{color:var(--text)}
+.thumb{width:84px;height:84px;border-radius:8px;background:#EEF1EF;overflow:hidden;position:relative;border:0;padding:0;cursor:zoom-in;display:block}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);text-align:center;padding:6px}
+.thumb .play{position:absolute;right:5px;bottom:5px;width:22px;height:22px;border-radius:50%;background:rgba(19,41,61,.85);display:flex;align-items:center;justify-content:center}
+.thumb .play::after{content:"";border-left:7px solid #fff;border-top:4.5px solid transparent;border-bottom:4.5px solid transparent;margin-left:2px}
+.info{min-width:0}
+.info .nm{font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.info .as{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.info .main-m{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+.info .main-m b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.rank.best .main-m b{color:var(--good)}
+.rank.worst .main-m b{color:var(--bad)}
+.info .main-m em{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.meter{height:5px;background:#EEF1EF;border-radius:3px;margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:3px}
+.rank.best .meter i{background:var(--good)}
+.rank.worst .meter i{background:var(--bad)}
+.minis{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:7px;font-size:12px;color:var(--muted)}
+.minis b{color:var(--text);font-weight:700}
+
+.def{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.def b{color:var(--text)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(10,20,30,.78);display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+.lb.on{display:flex}
+.lb figure{margin:0;max-width:min(560px,92vw);background:#fff;border-radius:12px;overflow:hidden}
+.lb img{width:100%;display:block;max-height:70vh;object-fit:contain;background:#EEF1EF}
+.lb figcaption{padding:12px 16px;font-size:13px}
+.lb figcaption b{display:block}
+
+@media (max-width:1100px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .hero{grid-template-columns:1fr}
+  .rank-cols,.g2{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr);background:var(--paper)}
+  .side{position:sticky;top:0;height:auto;z-index:20;padding:14px 14px 0;padding-top:max(14px,env(safe-area-inset-top))}
+  .brand{padding:0 4px 10px;border:0;display:flex;align-items:baseline;gap:10px}
+  .brand b{font-size:17px}.brand span{margin:0}
+  .nav{flex-direction:row;overflow-x:auto;margin:0 -14px;padding:0 10px 10px;gap:4px}
+  .nav a{white-space:nowrap;padding:8px 12px}
+  .nav a.on::before{display:none}
+  .nav a small{display:none}
+  .side-foot{display:none}
+  .main{padding:22px 16px 48px}
+  .head h1{font-size:23px}
+  .hero{padding:24px 20px}.hero h2{font-size:23px}
+  .item{grid-template-columns:22px 68px 1fr;gap:10px;padding:12px 14px}
+  .thumb{width:68px;height:68px}
+  .chart{height:280px}
+}
+
+/* 신규 전략 페이지 */
+.strategy-hero{background:var(--ink);color:white;border-radius:14px;padding:32px;margin-bottom:18px}
+.strategy-hero .eyebrow{font-size:12px;color:#E7BF7D;letter-spacing:.12em;font-weight:800}
+.strategy-hero h2{font-size:29px;line-height:1.35;margin:9px 0}
+.strategy-hero p{color:#C7D4DF;margin:0}
+.strategy-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.strategy-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;min-width:0}
+.strategy-card .step{font-size:12px;color:var(--chu);font-weight:800}
+.strategy-card h3{font-size:18px;margin:9px 0}
+.strategy-card p{color:var(--muted);font-size:14px;margin:0}
+.strategy-label{display:inline-block;background:var(--chu-soft);color:#84561A;font-size:12px;font-weight:800;padding:5px 10px;border-radius:5px}
+.strategy-copy{font-size:19px;font-weight:800;line-height:1.45;margin:12px 0}
+.strategy-note{font-size:12px;color:var(--muted);margin:12px 0 0}
+.mockups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.mockup{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#fff}
+.mockup-art{min-height:245px;padding:27px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(135deg,#143047,#33536B);color:#fff}
+.mockup-art.warm{background:linear-gradient(135deg,#E7D5B8,#B8834B);color:#192E3D}
+.mockup-art .mini{font-size:12px;letter-spacing:.1em;font-weight:800}
+.mockup-art strong{font-size:29px;line-height:1.35;letter-spacing:-.04em}
+.mockup-art .cta{align-self:flex-start;border-radius:5px;padding:8px 14px;background:#fff;color:#143047;font-weight:800;font-size:13px}
+.mockup-desc{padding:15px 19px;font-size:13px;color:var(--muted)}
+.strategy-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.strategy-flow>div{padding:18px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.strategy-flow b{display:block;font-size:14px;margin-bottom:7px}.strategy-flow span{font-size:13px;color:var(--muted)}
+.strategy-list{margin:10px 0 0;padding-left:19px;color:var(--muted);font-size:14px}.strategy-list li{margin:6px 0}
+@media(max-width:1100px){.strategy-cards,.strategy-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.strategy-cards,.strategy-flow,.mockups{grid-template-columns:1fr}.strategy-hero{padding:24px}.strategy-hero h2{font-size:24px}}
+
+/* 실제 이미지 태그로 표시하는 내장 SVG 콘셉트 이미지 */
+.strategy-preview{display:block;width:100%;height:auto;aspect-ratio:1000/780;object-fit:cover;background:#19384a}
+.visual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.visual-card{min-width:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.visual-art{position:relative;isolation:isolate;min-height:340px;aspect-ratio:1.45;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:28px;color:#fff;background:radial-gradient(circle at 85% 80%,#6d8b98 0%,transparent 48%),linear-gradient(140deg,#102a40,#2d5265)}
+.visual-art.gold{background:radial-gradient(circle at 82% 77%,#ead7a9 0%,transparent 46%),linear-gradient(130deg,#795133,#c39663);color:#1d2d3a}
+.visual-art.festive{background:radial-gradient(circle at 88% 82%,#dcbf85 0%,transparent 46%),linear-gradient(135deg,#223e51,#55758a)}
+.visual-art.cream{background:radial-gradient(circle at 85% 78%,#dfc49b 0%,transparent 50%),linear-gradient(135deg,#eee4d3,#cba577);color:#253b4c}
+.visual-art::before{content:"";position:absolute;right:-56px;bottom:-92px;width:290px;height:290px;border:1px solid currentColor;opacity:.15;border-radius:50%;z-index:-1;box-shadow:0 0 0 35px rgba(255,255,255,.06),0 0 0 80px rgba(255,255,255,.035)}
+.visual-art .visual-kicker{font-size:12px;font-weight:800;letter-spacing:.1em;opacity:.9}
+.visual-art .visual-title{font-size:clamp(25px,2.7vw,40px);font-weight:850;line-height:1.25;letter-spacing:-.045em;max-width:95%;text-wrap:balance}
+.visual-art .visual-action{align-self:flex-start;padding:10px 16px;background:#fff;color:#163247;border-radius:5px;font-size:13px;font-weight:800}
+.visual-art.gold .visual-action,.visual-art.cream .visual-action{background:#183247;color:#fff}
+.visual-caption{padding:14px 18px;font-size:13px;color:var(--muted)}
+.visual-caption b{display:block;color:var(--text);font-size:14px;margin-bottom:3px}
+.visual-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px;background:#f6f7f5;border-top:1px solid var(--line)}
+.visual-stages span{font-size:12px;text-align:center;border:1px solid #dce3e2;background:#fff;border-radius:6px;padding:9px 5px;font-weight:700}
+@media(max-width:760px){.visual-grid{grid-template-columns:1fr}.visual-art{min-height:300px}.visual-art .visual-title{font-size:30px}}
+</style>
 </head>
 <body>
-  <div class="progress"><span id="progressBar"></span></div>
-
-  <header class="topbar">
-    <a class="brand" href="#home">
-      <span class="brand-mark">C</span>
-      <span>COUPANG<br><small>AD STRATEGY</small></span>
-    </a>
-    <button class="menu-btn" id="menuBtn" aria-label="목차 열기">☰</button>
-  </header>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="side-title">CONTENTS</div>
-    <nav>
-      <a class="nav-link active" href="#home"><b>00</b> 제안서 Overview</a>
-      <a class="nav-link" href="#basic"><b>01</b> 쿠팡 기본 광고 설명</a>
-      <a class="nav-link" href="#cases"><b>02</b> Case별 운영 방안</a>
-      <a class="nav-link" href="#case1"><b>03</b> Case 1 · 처음 운영하는 브랜드</a>
-      <a class="nav-link" href="#case2"><b>04</b> Case 2 · 전체 매출 향상</a>
-      <a class="nav-link" href="#case3"><b>05</b> Case 3 · 광고 ROAS 개선</a>
-      <a class="nav-link" href="#case4"><b>06</b> Case 4 · 신제품 출시</a>
-      <a class="nav-link" href="#improve"><b>07</b> 광고 문제점 개선 방안</a>
-      <a class="nav-link" href="#reference"><b>08</b> 실제 운영 레퍼런스</a>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><b>삼진어묵</b><span>명절 시즌 광고 리포트</span></div>
+    <nav class="nav" id="nav">
+      <a href="#overview" data-p="overview">성과 요약</a>
+      <a href="#channels" data-p="channels">매체별 비교</a>
+      <a href="#daily" data-p="daily">일자별 추이</a>
+      <a href="#creatives" data-p="creatives">소재 성과 <small>Meta</small></a>
+      <a href="#naver" data-p="naver">네이버 광고그룹</a>
+      <a href="#business" data-p="business">사업자몰 전략 <small>NEW</small></a>
+      <a href="#seollal27" data-p="seollal27">27년 설날 전략 <small>NEW</small></a>
+      <a href="#budget" data-p="budget">4분기 예산 운영 <small>NEW</small></a>
     </nav>
-    <div class="side-footer">Coupang Advertising<br>Strategy Proposal<br><br><span class="key-hint">↑ ↓  페이지 이동</span></div>
+    <div class="side-foot">
+      <div><i style="background:var(--chu)"></i>추석 <span id="f-chu"></span></div>
+      <div><i style="background:var(--seol)"></i>설날 <span id="f-seol"></span></div>
+      <div style="margin-top:10px">Meta 소재 지표: Ads MCP<br><span id="f-pull"></span> 조회</div>
+    </div>
   </aside>
 
-  <main>
-    <section class="hero" id="home">
-      <div class="hero-copy">
-        <span class="eyebrow">COUPANG ADVERTISING STRATEGY</span>
-        <h1>쿠팡 광고,<br><strong>목적에 따라</strong> 다르게 운영합니다.</h1>
-        <p>브랜드의 현재 상황과 목표를 기준으로 광고 구조를 설계하고,<br>
-        매출 확대부터 ROAS 개선까지 단계별 운영 전략을 제안합니다.</p>
-        <div class="hero-actions">
-          <a href="#basic" class="btn primary">제안서 시작하기 →</a>
-          <a href="#cases" class="btn ghost">Case 보기</a>
+  <main class="main">
+    <!-- 성과 요약 -->
+    <section class="page" id="p-overview">
+      <div class="head">
+        <div><h1>추석 vs 설날, 무엇이 달라졌나</h1><p id="ov-period"></p></div>
+        <div class="seg" id="ov-basis">
+          <button data-v="all" class="on">전체 5개 채널</button>
+          <button data-v="daily">일 단위 유료매체</button>
         </div>
       </div>
-      <div class="hero-card">
-        <div class="hero-card-top">AD OPERATION FRAMEWORK</div>
-        <div class="flow">
-          <span>진단</span><i>→</i><span>구조화</span><i>→</i><span>확장</span><i>→</i><span>최적화</span>
+      <div class="hero">
+        <div>
+          <h2 id="ov-headline"></h2>
+          <p id="ov-note"></p>
         </div>
-        <div class="hero-metric">
-          <strong>GOAL</strong>
-          <span>매출 성장 · 효율 개선 · 신제품 안착</span>
+        <div class="duel" id="ov-duel"></div>
+      </div>
+      <div class="kpis" id="ov-kpis"></div>
+      <div class="grid g2 mt">
+        <div class="panel">
+          <h2>핵심 인사이트</h2><p class="sub">보고서 요약 시트 기준</p>
+          <ul class="insights" id="ov-ins"></ul>
+        </div>
+        <div class="panel">
+          <h2>매출 구성 (추석)</h2><p class="sub">채널별 전환매출 비중</p>
+          <div class="chart"><canvas id="c-mix"></canvas></div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="basic">
-      <div class="section-head">
-        <span class="num">01</span>
-        <div><span class="eyebrow">FOUNDATION</span><h2>쿠팡 기본 광고 설명</h2></div>
+    <!-- 매체별 비교 -->
+    <section class="page" id="p-channels">
+      <div class="head"><div><h1>매체별 비교</h1><p>설날과 추석, 같은 5개 채널의 광고비·전환매출·ROAS</p></div></div>
+      <div class="grid g2">
+        <div class="panel"><h2>광고비</h2><p class="sub">단위: 백만원</p><div class="chart"><canvas id="c-ch-spend"></canvas></div></div>
+        <div class="panel"><h2>전환매출</h2><p class="sub">단위: 백만원</p><div class="chart"><canvas id="c-ch-rev"></canvas></div></div>
       </div>
-      <p class="lead">쿠팡 광고는 단순히 예산을 투입하는 것이 아니라, <strong>검색 수요를 확보하고 상품의 구매 가능성을 높이는 구조</strong>로 접근해야 합니다.</p>
-
-      <div class="ad-grid">
-        <article class="ad-card featured">
-          <span class="tag">CORE</span>
-          <h3>상품 광고</h3>
-          <p>상품 단위로 노출을 확보해 구매 의도가 높은 고객을 유입시키는 핵심 광고 영역입니다.</p>
-          <ul><li>검색·카테고리 중심 수요 확보</li><li>상품별 입찰가 및 예산 조정</li><li>판매 데이터 기반 효율 관리</li></ul>
-        </article>
-        <article class="ad-card">
-          <span class="tag">DISCOVERY</span>
-          <h3>브랜드/노출형 광고</h3>
-          <p>브랜드와 상품을 함께 노출해 탐색 단계의 고객에게 브랜드 존재감을 강화합니다.</p>
-          <ul><li>브랜드 인지도 확대</li><li>신규 고객 접점 확대</li><li>상품군 단위 확장에 활용</li></ul>
-        </article>
-        <article class="ad-card">
-          <span class="tag">DATA</span>
-          <h3>데이터 기반 최적화</h3>
-          <p>광고 성과만 보지 않고 상품 매출, 전환율, 객단가 등을 함께 보며 운영 방향을 결정합니다.</p>
-          <ul><li>ROAS / CPC / CVR</li><li>상품별 매출 기여도</li><li>검색 수요와 경쟁 강도</li></ul>
-        </article>
+      <div class="panel mt">
+        <h2>채널별 ROAS</h2><p class="sub">브랜드검색은 정액 계약이라 ROAS가 극단적으로 높게 계산됩니다. 참고용으로만 보세요.</p>
+        <div class="tbl-wrap"><table id="t-ch"></table></div>
       </div>
+    </section>
 
-      <div class="visual-panel">
-        <div class="visual-title"><span>AD STRUCTURE</span><strong>쿠팡 광고 운영의 기본 구조</strong></div>
-        <div class="bar-chart">
-          <div><span>노출</span><i style="width:100%"></i><b>수요 확보</b></div>
-          <div><span>클릭</span><i style="width:72%"></i><b>관심 유도</b></div>
-          <div><span>전환</span><i style="width:43%"></i><b>구매</b></div>
-          <div><span>재구매</span><i style="width:25%"></i><b>고객 가치</b></div>
+    <!-- 일자별 추이 -->
+    <section class="page" id="p-daily">
+      <div class="head">
+        <div><h1>일자별 추이</h1><p>Meta·네이버 검색광고·모비온 합산 (브랜드검색 제외)</p></div>
+        <div class="seg" id="dy-season">
+          <button data-v="chu" class="on">추석</button>
+          <button data-v="seol">설날</button>
         </div>
       </div>
-      <div class="insight">
-        <span>KEY POINT</span>
-        <p>광고비를 늘리는 것보다 먼저 <b>어떤 상품에, 어떤 목적의 예산을 배분할 것인지</b>를 정하는 것이 중요합니다.</p>
+      <div class="panel">
+        <h2 id="dy-title"></h2><p class="sub">막대: 매체별 매출 · 선: 합계 광고비 (오른쪽 축)</p>
+        <div class="chart tall"><canvas id="c-daily"></canvas></div>
+      </div>
+      <div class="panel mt">
+        <h2>D-day 기준으로 겹쳐 보기</h2><p class="sub">추석은 주문마감일(9/21), 설날은 명절 당일(2/17) 기준. 두 시즌 모두 D-14 ~ D-6 구간에 매출이 몰렸습니다.</p>
+        <div class="chart"><canvas id="c-overlay"></canvas></div>
       </div>
     </section>
 
-    <section class="section gray" id="cases">
-      <div class="section-head">
-        <span class="num">02</span>
-        <div><span class="eyebrow">CASE FRAMEWORK</span><h2>Case별 운영 방안</h2></div>
-      </div>
-      <p class="lead">같은 쿠팡 광고라도 브랜드의 목표가 달라지면 KPI와 운영 방식도 달라져야 합니다.</p>
-
-      <div class="case-map">
-        <a href="#case1"><small>CASE 01</small><strong>처음 운영</strong><span>기초 데이터 확보</span></a>
-        <a href="#case2"><small>CASE 02</small><strong>매출 향상</strong><span>성장 상품 집중</span></a>
-        <a href="#case3"><small>CASE 03</small><strong>ROAS 개선</strong><span>비효율 제거</span></a>
-        <a href="#case4"><small>CASE 04</small><strong>신제품 출시</strong><span>초기 수요 확보</span></a>
-      </div>
-      <div class="case-matrix">
-        <div class="matrix-head"><span>브랜드 상황</span><span>우선 KPI</span><span>핵심 액션</span><span>운영 방향</span></div>
-        <div><b>신규 운영</b><span>데이터 확보</span><span>테스트 → 선별</span><em>학습 중심</em></div>
-        <div><b>매출 성장</b><span>매출액</span><span>성장상품 발굴</span><em class="blue">확장 중심</em></div>
-        <div><b>ROAS 개선</b><span>ROAS / CVR</span><span>비효율 제거</span><em>효율 중심</em></div>
-        <div><b>신제품 출시</b><span>유입 / CVR</span><span>초기 수요 확보</span><em class="blue">검증 중심</em></div>
-      </div>
-    </section>
-
-    <section class="section case-section" id="case1">
-      <div class="case-label">CASE 01</div>
-      <div class="section-head"><div><span class="eyebrow">STARTER</span><h2>처음 운영하는 브랜드</h2></div></div>
-      <p class="lead">처음부터 효율만 쫓기보다 <strong>상품별 반응과 검색 수요를 확인할 수 있는 데이터 기반</strong>을 만드는 것이 우선입니다.</p>
-      <div class="metric-strip">
-        <div><small>STEP 01</small><strong>TEST</strong><span>대표 상품 중심</span></div>
-        <div><small>STEP 02</small><strong>LEARN</strong><span>상품별 데이터</span></div>
-        <div><small>STEP 03</small><strong>SELECT</strong><span>성장 가능 상품</span></div>
-        <div><small>STEP 04</small><strong>FOCUS</strong><span>예산 집중</span></div>
-      </div>
-      <div class="strategy">
-        <div class="strategy-main">
-          <h3>운영 목표 <span>01</span></h3>
-          <div class="goal-box">상품별 <b>광고 반응 데이터 확보</b> → 판매 가능 상품 선별 → 효율화 기반 구축</div>
-          <h3>추천 운영 구조 <span>02</span></h3>
-          <div class="timeline">
-            <div><b>STEP 1</b><strong>전체 상품 테스트</strong><p>대표 상품 중심으로 광고를 시작해 상품별 클릭·전환 데이터를 수집</p></div>
-            <div><b>STEP 2</b><strong>상품군 분류</strong><p>판매 가능성이 높은 상품 / 보완이 필요한 상품 / 테스트 상품으로 구분</p></div>
-            <div><b>STEP 3</b><strong>예산 재배분</strong><p>전환이 확인된 상품에 예산을 집중하고 비효율 상품은 입찰 및 노출을 조정</p></div>
+    <!-- 소재 성과 -->
+    <section class="page" id="p-creatives">
+      <div class="head">
+        <div><h1>Meta 소재 성과</h1><p id="cr-sub"></p></div>
+        <div class="ctl">
+          <div class="seg" id="cr-metric">
+            <button data-v="ctr" class="on">클릭률</button>
+            <button data-v="roas">ROAS</button>
+            <button data-v="revenue">매출액</button>
           </div>
+          <label for="cr-min">최소 광고비</label>
+          <select id="cr-min">
+            <option value="0">전체</option>
+            <option value="50000">5만원 이상</option>
+            <option value="100000" selected>10만원 이상</option>
+            <option value="300000">30만원 이상</option>
+          </select>
         </div>
-        <aside class="kpi">
-          <span>KPI</span><strong>데이터 확보</strong>
-          <p>CTR · CVR<br>상품별 매출<br>검색/전환 데이터</p>
-        </aside>
+      </div>
+      <div class="rank-cols">
+        <div class="rank best"><div class="rank-h"><h3><i style="background:var(--good)"></i>베스트 TOP 5</h3><span id="cr-best-lbl"></span></div><div id="cr-best"></div></div>
+        <div class="rank worst"><div class="rank-h"><h3><i style="background:var(--bad)"></i>워스트 TOP 5</h3><span id="cr-worst-lbl"></span></div><div id="cr-worst"></div></div>
+      </div>
+
+      <div class="grid g2 mt">
+        <div class="panel">
+          <h2>영상 소재 Hook · Hold</h2>
+          <p class="sub">원 크기 = 전환매출, 금색 = ROAS 3,000% 이상. 오른쪽 위로 갈수록 첫 3초에 붙잡고, 붙잡은 사람을 15초 이상 끌고 간 영상입니다.</p>
+          <div class="chart"><canvas id="c-hook"></canvas></div>
+          <p class="def"><b>Hook Rate</b> = 3초 영상재생 ÷ 노출 · <b>Hold Rate</b> = ThruPlay(15초 이상 재생) ÷ 3초 영상재생. 3초 재생은 광고 단위 원값이 API에 없어 광고비 ÷ 3초 재생당 비용으로 역산한 값(±2% 내외)입니다.</p>
+        </div>
+        <div class="panel">
+          <h2>영상 소재 상세</h2><p class="sub">노출 1,000회 이상 영상만</p>
+          <div class="tbl-wrap"><table id="t-video"></table></div>
+        </div>
+      </div>
+
+      <div class="panel mt">
+        <h2>전체 소재</h2><p class="sub">열 제목을 누르면 정렬됩니다. 클릭률 = 링크 클릭 ÷ 노출</p>
+        <div class="tbl-wrap"><table id="t-cr"></table></div>
       </div>
     </section>
 
-    <section class="section case-section alt" id="case2">
-      <div class="case-label">CASE 02</div>
-      <div class="section-head"><div><span class="eyebrow">GROWTH</span><h2>전체 매출 향상 목적 브랜드</h2></div></div>
-      <p class="lead">전체 매출을 키우려면 단일 베스트셀러에 의존하기보다 <strong>성장 가능 상품을 추가 발굴하고 매출 볼륨을 확대</strong>해야 합니다.</p>
-      <div class="two-col">
-        <div class="pillar"><span>01</span><h3>주력 상품 확대</h3><p>현재 매출을 만드는 상품에 안정적인 예산을 유지하면서 노출 점유율을 확대합니다.</p></div>
-        <div class="pillar"><span>02</span><h3>성장 상품 발굴</h3><p>광고 전환 데이터가 좋거나 리뷰·가격 경쟁력이 있는 상품을 추가 성장축으로 육성합니다.</p></div>
-        <div class="pillar"><span>03</span><h3>상품군 확장</h3><p>고객의 연관 구매 가능성이 높은 상품까지 광고 범위를 확장해 전체 매출을 키웁니다.</p></div>
-        <div class="pillar"><span>04</span><h3>예산 단계적 증액</h3><p>효율이 검증된 캠페인부터 예산을 증액해 매출 증가와 효율 사이의 균형을 관리합니다.</p></div>
+    <!-- 네이버 -->
+    <section class="page" id="p-naver">
+      <div class="head">
+        <div><h1>네이버 검색광고 광고그룹</h1><p>원본 리포트가 광고그룹 단위까지만 제공되어 키워드별 분석은 다음 보고 주기부터 가능합니다.</p></div>
+        <div class="seg" id="nv-season">
+          <button data-v="chu" class="on">추석</button>
+          <button data-v="seol">설날</button>
+        </div>
       </div>
-      <div class="growth-visual">
-        <div class="growth-bars"><span style="height:35%">기존</span><span style="height:52%">주력 확대</span><span style="height:70%">성장상품</span><span style="height:90%">상품군 확장</span></div>
-        <div><small>GROWTH MODEL</small><strong>광고 확장은 ‘검증된 상품’에서 시작</strong><p>기존 매출을 지키면서 성장 상품을 추가해 전체 매출의 모수를 확대합니다.</p></div>
-      </div>
-      <div class="formula"><b>매출 성장</b> = 유입 확대 × 전환율 개선 × 판매 상품 확대</div>
+      <div class="panel"><div class="tbl-wrap"><table id="t-nv"></table></div></div>
     </section>
 
-    <section class="section case-section" id="case3">
-      <div class="case-label">CASE 03</div>
-      <div class="section-head"><div><span class="eyebrow">EFFICIENCY</span><h2>광고 ROAS 개선 목적 브랜드</h2></div></div>
-      <p class="lead">ROAS가 낮다면 무조건 예산을 줄이기보다 <strong>어디에서 광고비가 새고 있는지</strong>부터 찾아야 합니다.</p>
-      <div class="efficiency-funnel">
-        <div><b>광고비</b><strong>100</strong><span>전체 집행</span></div>
-        <i>→</i><div><b>클릭</b><strong>72</strong><span>유입 선별</span></div>
-        <i>→</i><div><b>전환</b><strong>43</strong><span>구매 선별</span></div>
-        <i>→</i><div class="highlight"><b>효율</b><strong>↑</strong><span>비효율 제거</span></div>
+    <!-- 사업자몰 전략: 신규 거래처 첫 구매 -->
+    <section class="page" id="p-business">
+      <div class="head"><div><h1>삼진어묵 사업자몰 광고 전략</h1><p>회원가입부터 첫 구매까지 · 신규 거래처 전환 중심</p></div></div>
+      <div class="strategy-hero"><div class="eyebrow">B2B · FIRST PURCHASE</div><h2>회원가입 혜택에 첫 구매 쿠폰을 더해<br>신규 사업자의 첫 주문을 유도</h2><p>핵심 메시지: 회원가입 혜택 + 첫 구매 추가 할인쿠폰 · 중복 적용은 실제 운영 조건 확정 후 집행</p></div>
+      <div class="strategy-cards">
+        <div class="strategy-card"><span class="step">01 · OFFER</span><h3>첫 구매 추가 할인쿠폰</h3><p>신규 사업자 회원을 대상으로 첫 주문 시 추가 쿠폰을 제공하는 혜택안. 할인율·최소 주문금액·중복 가능 여부는 협의 후 확정.</p></div>
+        <div class="strategy-card"><span class="step">02 · MESSAGE</span><h3>혜택을 한 문장으로</h3><p>“사업자 회원가입 혜택 + 첫 구매 추가 쿠폰”을 메타 이미지, 네이버, 구글에서 일관되게 소구.</p></div>
+        <div class="strategy-card"><span class="step">03 · CONVERSION</span><h3>첫 주문까지 연결</h3><p>광고 클릭 → 사업자 회원가입 → 쿠폰 확인 → 상품 탐색 → 첫 구매. 가입수뿐 아니라 첫 구매 건수와 신규 거래처 확보비용을 함께 확인.</p></div>
       </div>
-      <div class="diagnosis">
-        <div><span>01</span><h3>비효율 상품</h3><p>클릭은 발생하지만 구매가 적은 상품의 입찰가·예산을 조정합니다.</p></div>
-        <div><span>02</span><h3>낮은 전환율</h3><p>상세페이지, 가격, 리뷰, 옵션 등 광고 외 구매 요인을 함께 점검합니다.</p></div>
-        <div><span>03</span><h3>높은 CPC</h3><p>경쟁이 과도한 영역은 입찰가를 낮추고 효율적인 상품·수요에 예산을 재배분합니다.</p></div>
-        <div><span>04</span><h3>매출 기여도</h3><p>ROAS만 보지 않고 광고가 실제 전체 매출에 기여하는지 함께 판단합니다.</p></div>
+      <div class="grid g2 mt">
+        <div class="panel"><h2>네이버 · 혜택 중심 검색광고</h2><p class="sub">사업자 구매 의도가 있는 검색 수요 대응</p><span class="strategy-label">회원가입 + 첫 구매 혜택</span><div class="strategy-copy">사업자몰 가입하고<br>첫 구매 추가 쿠폰 확인</div><ul class="strategy-list"><li>사업자용 어묵·대량구매 등 구매 의도 키워드 중심 운영</li><li>광고 문구와 랜딩페이지에 동일한 혜택 표시</li><li>회원가입 및 첫 구매 전환을 분리 측정</li></ul></div>
+        <div class="panel"><h2>구글 · 신규 거래처 유입 확대</h2><p class="sub">검색 의도와 혜택 메시지 연결</p><span class="strategy-label">회원가입 + 첫 구매 혜택</span><div class="strategy-copy">삼진어묵 사업자몰<br>첫 주문 혜택 확인하기</div><ul class="strategy-list"><li>사업자·식자재·어묵 납품 관련 검색어 검토</li><li>검색광고 제목·설명에 첫 구매 혜택 반영</li><li>신규 가입 → 첫 구매 경로별 성과 확인</li></ul></div>
       </div>
-      <div class="action-table">
-        <div class="table-row head"><span>상황</span><span>진단</span><span>액션</span></div>
-        <div class="table-row"><span>클릭↑ / 구매↓</span><span>전환율 문제</span><span>상품 경쟁력·상세페이지 점검</span></div>
-        <div class="table-row"><span>CPC↑ / 매출↓</span><span>입찰 과다</span><span>입찰가 조정 및 예산 재배분</span></div>
-        <div class="table-row"><span>ROAS↑ / 매출 정체</span><span>보수적 운영</span><span>검증 상품 중심 단계적 증액</span></div>
-      </div>
+      <div class="panel mt"><h2>운영 전 확정할 사항</h2><p class="sub">확정되지 않은 조건은 실제 광고에 단정적으로 사용하지 않습니다.</p><div class="strategy-flow"><div><b>쿠폰 조건</b><span>할인율·금액·사용기한</span></div><div><b>중복 적용</b><span>회원가입 쿠폰과 첫 구매 쿠폰의 동시 사용 여부</span></div><div><b>랜딩</b><span>회원가입·쿠폰·상품으로 이어지는 동선</span></div><div><b>성과 측정</b><span>신규 가입·첫 구매·첫 구매 CPA</span></div></div></div>
     </section>
 
-    <section class="section case-section alt" id="case4">
-      <div class="case-label">CASE 04</div>
-      <div class="section-head"><div><span class="eyebrow">LAUNCH</span><h2>신제품 출시</h2></div></div>
-      <p class="lead">신제품은 초기부터 높은 ROAS를 기대하기보다 <strong>검색 수요와 구매 신호를 빠르게 확보하는 것</strong>이 핵심입니다.</p>
-      <div class="launch-roadmap">
-        <div><b>LAUNCH</b><strong>0–2주</strong><span>유입 확보</span></div>
-        <div><b>VALIDATE</b><strong>2–4주</strong><span>전환 검증</span></div>
-        <div><b>SCALE</b><strong>4주+</strong><span>예산 확대</span></div>
+    <!-- 2027 설날 광고 운영 전략 -->
+    <section class="page" id="p-seollal27">
+      <div class="head"><div><h1>2027년 설날 광고 운영 전략</h1><p>2026년 설날·추석 베스트 소재의 후킹 포인트를 영상과 이미지로 확장</p></div></div>
+      <div class="strategy-hero"><div class="eyebrow">2027 SEOLLAL · CREATIVE STRATEGY</div><h2>두 명절의 베스트 소재를 기반으로<br>검증된 후킹 포인트를 다시 활용</h2><p>2026년 설날·추석의 실제 상위 성과 소재를 선정하고, 핵심 메시지·비주얼·영상 초반 구조를 2027년 설날에 맞게 재구성</p></div>
+      <div class="strategy-cards">
+        <div class="strategy-card"><span class="step">01 · 2026 설날</span><h3>설날 베스트 소재 분석</h3><p>설날 소재 중 ROAS·매출·CTR 등 목표 지표에 따른 상위 소재를 확인하고, 선물세트 메시지와 반응 요소를 추출.</p></div>
+        <div class="strategy-card"><span class="step">02 · 2026 추석</span><h3>추석 베스트 소재 분석</h3><p>기존 Meta 소재 성과 페이지의 베스트 TOP 5와 영상 Hook·Hold를 참고해 반응이 확인된 표현·장면·구성을 선정.</p></div>
+        <div class="strategy-card"><span class="step">03 · 2027 설날</span><h3>영상 + 이미지로 확장</h3><p>두 시즌의 성과 요소를 2027년 설날 선물세트와 행사 조건에 맞춰 재편집하고 새로운 버전으로 테스트.</p></div>
       </div>
-      <div class="launch-grid">
-        <div><b>PHASE 1</b><h3>인지·유입 확보</h3><p>신제품의 핵심 USP를 명확히 전달하고 충분한 유입 데이터를 확보합니다.</p></div>
-        <div><b>PHASE 2</b><h3>전환 데이터 수집</h3><p>클릭 대비 구매율, 가격 반응, 고객 반응을 확인해 상품 경쟁력을 검증합니다.</p></div>
-        <div><b>PHASE 3</b><h3>성장 상품화</h3><p>전환이 확인된 상품은 예산을 단계적으로 확대해 주력 상품으로 육성합니다.</p></div>
-      </div>
-      <div class="launch-note"><b>신제품 운영의 핵심</b><span>초기 효율보다 “판매 가능성”을 확인하고, 가능성이 확인된 순간 빠르게 확대하는 것</span></div>
-    </section>
-
-    <section class="section" id="improve">
-      <div class="section-head">
-        <span class="num">07</span>
-        <div><span class="eyebrow">OPTIMIZATION</span><h2>광고 문제점에 대한 개선 방안</h2></div>
-      </div>
-      <p class="lead">광고 성과가 기대보다 낮을 때는 <strong>광고 지표 → 상품 경쟁력 → 운영 구조</strong> 순서로 원인을 분리해 개선합니다.</p>
-      <div class="diagnostic-table">
-        <div class="matrix-head"><span>지표</span><span>상태</span><span>가능 원인</span><span>우선 액션</span></div>
-        <div><b>노출</b><span>낮음</span><span>입찰 / 경쟁 / 수요</span><strong>노출 기회 확대</strong></div>
-        <div><b>CTR</b><span>낮음</span><span>상품명 / 가격 / 이미지</span><strong>클릭 요소 개선</strong></div>
-        <div><b>CVR</b><span>낮음</span><span>상품 경쟁력 / 상세페이지</span><strong>구매장벽 개선</strong></div>
-        <div><b>ROAS</b><span>낮음</span><span>비효율 상품 / CPC</span><strong>예산 재배분</strong></div>
-      </div>
-      <div class="problem-list">
-        <article><span class="problem">PROBLEM 01</span><h3>광고비는 사용되는데 매출이 낮음</h3><p>전환율과 상품별 매출 기여도를 확인하고, 비효율 상품의 입찰가 및 예산을 조정합니다.</p><b>→ 개선 : 예산 재배분 + 전환 상품 집중</b></article>
-        <article><span class="problem">PROBLEM 02</span><h3>노출은 많은데 클릭이 낮음</h3><p>상품명, 대표 이미지, 가격 경쟁력, 노출 포지션 등 클릭을 만드는 요소를 점검합니다.</p><b>→ 개선 : 상품 경쟁력 및 소재/상품 정보 개선</b></article>
-        <article><span class="problem">PROBLEM 03</span><h3>클릭은 많은데 구매가 낮음</h3><p>상세페이지와 가격, 리뷰, 옵션, 배송조건 등 구매 결정 단계의 장애요인을 확인합니다.</p><b>→ 개선 : CVR 개선을 위한 상품 페이지 최적화</b></article>
-        <article><span class="problem">PROBLEM 04</span><h3>ROAS는 좋은데 매출이 성장하지 않음</h3><p>지나치게 보수적인 운영으로 성장 기회를 놓치고 있는지 확인합니다.</p><b>→ 개선 : 검증 상품 중심 단계적 증액</b></article>
-      </div>
-      <div class="final-message">
-        <span>FINAL FRAMEWORK</span>
-        <h2>진단 → 테스트 → 검증 → 집중 → 확장</h2>
-        <p>쿠팡 광고는 한 번의 세팅보다 지속적인 데이터 분석과 예산 재배분을 통해 성과를 만들어갑니다.</p>
+      <div class="panel mt"><h2>제작 및 운영 흐름</h2><p class="sub">실제 베스트 소재를 선택한 뒤 다음 순서로 진행</p>
+        <div class="strategy-flow"><div><b>① 베스트 선정</b><span>설날·추석 소재의 ROAS·매출·CTR 및 광고비 확인</span></div><div><b>② 후킹 추출</b><span>첫 화면·상품 컷·카피·혜택 표현 분석</span></div><div><b>③ 소재 제작</b><span>영상 숏폼 및 이미지 배너 버전별 제작</span></div><div><b>④ 성과 최적화</b><span>초기 테스트 후 첫 구매·매출 성과 중심으로 예산 조정</span></div></div>
+        <p class="strategy-note">참고: 현재 제공된 index.html은 추석 Meta 소재 데이터를 표시합니다. 2026년 설날의 실제 베스트 소재를 자동 선정하려면 해당 시즌 소재별 데이터·이미지를 추가로 제공해야 합니다.</p>
       </div>
     </section>
 
-    <section class="section reference-ready" id="reference">
-      <div class="section-head">
-        <span class="num">08</span>
-        <div><span class="eyebrow">REFERENCE / PERFORMANCE</span><h2>실제 운영 레퍼런스</h2></div>
+    <!-- 2026년 4분기 매체별 예산 운영: 마지막 목차 -->
+    <section class="page" id="p-budget">
+      <div class="head"><div><h1>2026년 4분기 매체별 예산 운영안</h1><p>10~12월 1차 예산안 · VAT 별도 · 운영 성과에 따라 탄력적으로 재배분</p></div></div>
+      <div class="strategy-hero"><div class="eyebrow">Q4 2026 · PERFORMANCE-BASED BUDGET</div><h2>초기 예산안대로 집행하고,<br>성과를 보며 예산을 이동</h2><p>매체별 초기 배분을 기준으로 운영하되, 매출·ROAS·전환 성과를 정기 점검하여 효율이 확인된 캠페인으로 예산을 탄력적으로 재배분합니다.</p></div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">10월 광고 예산</div><div class="v">690만원</div><div class="c">자사몰 목표 매출 2.2억원</div></div>
+        <div class="kpi"><div class="k">11월 광고 예산</div><div class="v">1,640만원</div><div class="c">자사몰 목표 매출 2.5억원</div></div>
+        <div class="kpi"><div class="k">12월 광고 예산</div><div class="v">965만원</div><div class="c">자사몰 목표 매출 2.8억원</div></div>
+        <div class="kpi"><div class="k">4분기 광고 예산</div><div class="v">3,295만원</div><div class="c">월별 계획 합산 · VAT 별도</div></div>
       </div>
-      <p class="lead">브랜드별 사업 목표에 따라 <strong>광고비 절감, ROAS 개선, 전체 매출 확대</strong>의 우선순위를 다르게 설계한 실제 운영 사례입니다. 광고 ROAS만 단독으로 보지 않고 <strong>전체 매출 기여도까지 함께 판단</strong>합니다.</p>
-
-      <div class="ref-summary-table">
-        <div class="matrix-head"><span>구분</span><span>업체 니즈</span><span>핵심 변화</span><span>운영 방향</span></div>
-        <div><b>Case A</b><span>광고비 누수 개선 + 전체 매출 증대</span><span>광고비 ↓ / 전체매출 ↑</span><strong>효율화 후 매출 확대</strong></div>
-        <div><b>Case B</b><span>광고비 누수 개선 + ROAS 개선</span><span>광고비 ↓ / ROAS ↑</span><strong>고효율 영역 집중</strong></div>
-        <div><b>Case C</b><span>매출 상품 예산 추가 + 전체 매출 증대</span><span>광고비 ↑ / 전체매출 ↑</span><strong>성장 볼륨 확대</strong></div>
+      <div class="panel mt"><h2>월별 매체 예산 배분</h2><p class="sub">단위: 원 · 첨부된 「26년 4분기 매체별 예산안_1차_0923」 기준</p>
+        <div class="tbl-wrap"><table class="budget-table"><thead><tr><th>광고매체</th><th>10월</th><th>11월</th><th>12월</th></tr></thead><tbody>
+<tr><td>네이버 파워링크</td><td>400,000</td><td>400,000</td><td>400,000</td></tr>
+<tr><td>네이버 쇼핑검색광고</td><td>500,000</td><td>600,000</td><td>600,000</td></tr>
+<tr><td>모비온</td><td>1,500,000</td><td>1,500,000</td><td>1,500,000</td></tr>
+<tr><td>네이버 브랜드 광고(PC)</td><td>0</td><td>1,700,000</td><td>0</td></tr>
+<tr><td>네이버 브랜드 광고(모바일)</td><td>0</td><td>5,700,000</td><td>0</td></tr>
+<tr><td>구글광고</td><td>1,000,000</td><td>1,000,000</td><td>1,650,000</td></tr>
+<tr><td>인스타그램 광고</td><td>3,500,000</td><td>5,000,000</td><td>5,000,000</td></tr>
+<tr><td>기타</td><td>0</td><td>500,000</td><td>500,000</td></tr>
+        </tbody><tfoot><tr><td>총계</td><td>6,900,000</td><td>16,400,000</td><td>9,650,000</td></tr><tr><td>자사몰 목표 매출</td><td>220,000,000</td><td>250,000,000</td><td>280,000,000</td></tr><tr><td>광고비 / 목표 매출</td><td>3.14%</td><td>6.56%</td><td>3.45%</td></tr></tfoot></table></div>
       </div>
-
-      <div class="ref-grid">
-        
-      <article class="ref-case">
-        <div class="ref-head">
-          <div><small>레퍼런스 1</small><h3>광고비 누수 개선 + 전체 매출 증대</h3></div>
-          <span class="ref-badge">BEFORE → AFTER</span>
-        </div>
-        <div class="ref-compare">
-          <div class="ref-side before">
-            <b>BEFORE</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>39,853,520원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>144,651,800원</dd></div>
-              <div><dt>전체 매출</dt><dd>371,268,780원</dd></div>
-              <div><dt>ROAS</dt><dd>362.96%</dd></div>
-            </dl>
-          </div>
-          <div class="ref-arrow">→</div>
-          <div class="ref-side after">
-            <b>AFTER</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>24,460,628원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>91,582,010원</dd></div>
-              <div><dt>전체 매출</dt><dd>388,284,710원</dd></div>
-              <div><dt>ROAS</dt><dd>374.41%</dd></div>
-            </dl>
-          </div>
-        </div>
-        <div class="ref-delta">
-          <div><small>광고비</small><strong><span class="down">▼ 38.6%</span></strong></div>
-          <div><small>광고매출</small><strong><span class="down">▼ 36.7%</span></strong></div>
-          <div><small>전체매출</small><strong><span class="up">▲ 4.6%</span></strong></div>
-          <div><small>ROAS</small><strong><span class="up">▲ 11.5p</span></strong></div>
-        </div>
-        <div class="ref-insight"><b>INSIGHT</b><p>비효율 상품/키워드의 광고비를 줄이면서 전체 매출은 증가. 매출 기여 중심으로 광고 구조를 재편한 사례.</p></div>
-      </article>
-    
-      <article class="ref-case">
-        <div class="ref-head">
-          <div><small>레퍼런스 2</small><h3>광고비 누수 개선 + ROAS 개선</h3></div>
-          <span class="ref-badge">BEFORE → AFTER</span>
-        </div>
-        <div class="ref-compare">
-          <div class="ref-side before">
-            <b>BEFORE</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>10,184,928원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>108,749,380원</dd></div>
-              <div><dt>전체 매출</dt><dd>149,761,910원</dd></div>
-              <div><dt>ROAS</dt><dd>1067.75%</dd></div>
-            </dl>
-          </div>
-          <div class="ref-arrow">→</div>
-          <div class="ref-side after">
-            <b>AFTER</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>9,277,544원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>104,872,240원</dd></div>
-              <div><dt>전체 매출</dt><dd>150,377,060원</dd></div>
-              <div><dt>ROAS</dt><dd>1130.38%</dd></div>
-            </dl>
-          </div>
-        </div>
-        <div class="ref-delta">
-          <div><small>광고비</small><strong><span class="down">▼ 8.9%</span></strong></div>
-          <div><small>광고매출</small><strong><span class="down">▼ 3.6%</span></strong></div>
-          <div><small>전체매출</small><strong><span class="up">▲ 0.4%</span></strong></div>
-          <div><small>ROAS</small><strong><span class="up">▲ 62.6p</span></strong></div>
-        </div>
-        <div class="ref-insight"><b>INSIGHT</b><p>광고비를 절감하면서 ROAS와 전체 매출을 동시에 개선. 고효율 상품/키워드에 예산을 집중한 사례.</p></div>
-      </article>
-    
-      <article class="ref-case">
-        <div class="ref-head">
-          <div><small>레퍼런스 3</small><h3>매출 나오는 상품 예산 추가 + 전체 매출 증대</h3></div>
-          <span class="ref-badge">BEFORE → AFTER</span>
-        </div>
-        <div class="ref-compare">
-          <div class="ref-side before">
-            <b>BEFORE</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>22,931,128원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>99,270,860원</dd></div>
-              <div><dt>전체 매출</dt><dd>168,440,890원</dd></div>
-              <div><dt>ROAS</dt><dd>432.91%</dd></div>
-            </dl>
-          </div>
-          <div class="ref-arrow">→</div>
-          <div class="ref-side after">
-            <b>AFTER</b>
-            <dl>
-              <div><dt>집행 광고비</dt><dd>26,206,744원</dd></div>
-              <div><dt>광고 전환 매출</dt><dd>104,300,830원</dd></div>
-              <div><dt>전체 매출</dt><dd>181,695,320원</dd></div>
-              <div><dt>ROAS</dt><dd>397.99%</dd></div>
-            </dl>
-          </div>
-        </div>
-        <div class="ref-delta">
-          <div><small>광고비</small><strong><span class="up">▲ 14.3%</span></strong></div>
-          <div><small>광고매출</small><strong><span class="up">▲ 5.1%</span></strong></div>
-          <div><small>전체매출</small><strong><span class="up">▲ 7.9%</span></strong></div>
-          <div><small>ROAS</small><strong><span class="down">▼ 34.9p</span></strong></div>
-        </div>
-        <div class="ref-insight"><b>INSIGHT</b><p>ROAS 일부 하락을 감수하더라도 검증된 상품의 예산을 확대해 전체 매출 볼륨을 키운 성장형 사례.</p></div>
-      </article>
-    
+      <div class="grid g2 mt">
+        <div class="panel"><h2>운영 방향</h2><p class="sub">1차 예산안 기준 집행 → 성과 확인 → 재배분</p><ul class="insights"><li><b>초기 집행:</b> 10~12월 매체별 계획 예산을 기준으로 캠페인 운영</li><li><b>성과 점검:</b> 매체별 광고비·전환매출·ROAS·구매수를 함께 비교</li><li><b>예산 이동:</b> 효율이 낮은 캠페인의 예산 일부를 성과가 확인된 매체·소재로 재배분</li><li><b>시즌 대응:</b> 행사 일정·소재 피로도·주문 마감 등을 고려해 배분 비중 조정</li></ul></div>
+        <div class="panel"><h2>예산 조정 판단 기준</h2><p class="sub">단기 ROAS만으로 일괄 판단하지 않고 역할별 성과를 함께 검토</p><div class="strategy-flow"><div><b>매출·ROAS</b><span>집행 대비 전환매출 및 수익성</span></div><div><b>구매 전환</b><span>구매수·전환율·신규 구매</span></div><div><b>소재 효율</b><span>CTR·CPA·소재별 매출 기여</span></div><div><b>집행 여건</b><span>광고 학습·행사·정액 계약</span></div></div><p class="strategy-note">브랜드검색 등 정액 계약 매체는 계약 기간과 변경 가능 범위를 확인한 후 조정합니다. 실제 이동 규모와 시점은 운영 성과를 바탕으로 결정합니다.</p></div>
       </div>
-
-      <div class="reference-note">
-        <strong>REFERENCE TAKEAWAY</strong>
-        <span>브랜드마다 동일한 ROAS 목표를 적용하지 않고, ‘효율 개선형 / 성장 확대형 / 균형형’으로 목표를 구분해 예산과 상품 운영 방향을 설계합니다.</span>
-      </div>
+      <div class="panel mt"><h2>제안 요약</h2><p class="sub">고정 배분이 아닌 성과 기반 운영</p><p style="font-size:17px;font-weight:700;line-height:1.7;margin:4px 0">“본 예산안을 초기 집행 기준으로 활용하되, 매체별 성과를 지속적으로 모니터링하여 효율이 우수한 매체 및 캠페인 중심으로 예산을 탄력적으로 재배분하는 방향을 제안합니다.”</p></div>
     </section>
-
-<footer>
-      <div><strong>COUPANG AD STRATEGY</strong><br><span>Performance Marketing Proposal</span></div>
-      <p>본 제안서는 브랜드 상황에 따라 세부 광고 구조와 예산을 유연하게 조정하는 것을 전제로 합니다.</p>
-    </footer>
   </main>
+</div>
 
-  <script src="script.js"></script>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="소재 크게 보기">
+  <figure><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption></figure>
+</div>
+
+<script>
+const R = window.REPORT;
+const $ = s => document.querySelector(s);
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+const num = n => Math.round(n).toLocaleString('ko-KR');
+const eok = n => n >= 1e8 ? (n/1e8).toFixed(2).replace(/\.?0+$/,'') + '억' : (n/1e4).toLocaleString('ko-KR',{maximumFractionDigits:0}) + '만';
+const pct = (n,d=1) => (n*100).toFixed(d) + '%';
+const roasP = r => Math.round(r*100).toLocaleString('ko-KR') + '%';
+const chg = (a,b) => (b-a)/a;
+function deltaTag(v, goodIfUp=true){
+  const cls = Math.abs(v) < 0.0005 ? 'neutral' : ((v>0)===goodIfUp ? 'up' : 'down');
+  return `<span class="delta ${cls}">${v>0?'+':''}${(v*100).toFixed(1)}%</span>`;
+}
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+Chart.defaults.font.family = '"Pretendard Variable",Pretendard,sans-serif';
+Chart.defaults.color = '#66727D';
+Chart.defaults.plugins.legend.labels.boxWidth = 10;
+Chart.defaults.plugins.legend.labels.boxHeight = 10;
+const charts = {};
+function mk(id, cfg){ if(charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
+
+$('#f-chu').textContent = R.meta.chu; $('#f-seol').textContent = R.meta.seol; $('#f-pull').textContent = R.meta.pulled;
+
+/* ---------- 성과 요약 ---------- */
+const sum = (arr,k) => arr.reduce((a,x)=>a+x[k],0);
+function totals(season, basis){
+  if (basis === 'all'){ const c = R.channels[season]; return {spend:sum(c,'spend'), revenue:sum(c,'revenue')}; }
+  const d = R.daily[season];
+  return {spend: d.reduce((a,x)=>a+x.meta_s+x.naver_s+x.mob_s,0), revenue: d.reduce((a,x)=>a+x.meta_r+x.naver_r+x.mob_r,0)};
+}
+function renderOverview(basis){
+  const s = totals('seol',basis), c = totals('chu',basis);
+  const rs = s.revenue/s.spend, rc = c.revenue/c.spend;
+  const dS = chg(s.spend,c.spend), dR = chg(s.revenue,c.revenue), dRo = chg(rs,rc);
+  $('#ov-period').textContent = `추석 ${R.meta.chu} · 비교 설날 ${R.meta.seol}`;
+  $('#ov-headline').textContent = `추석은 설날보다 광고비를 ${Math.abs(dS*100).toFixed(1)}% 덜 쓰고, 매출은 ${Math.abs(dR*100).toFixed(1)}%만 줄었습니다.`;
+  $('#ov-note').textContent = basis==='all'
+    ? `전체 5개 채널 기준 · 통합 ROAS ${roasP(rs)} → ${roasP(rc)}`
+    : `브랜드검색(정액)을 뺀 일 단위 유료매체 기준 · ROAS ${roasP(rs)} → ${roasP(rc)}`;
+  const rows = [['광고비',s.spend,c.spend,eok],['전환매출',s.revenue,c.revenue,eok],['ROAS',rs,rc,roasP]];
+  $('#ov-duel').innerHTML = rows.map(([k,a,b,f])=>{
+    const m = Math.max(a,b);
+    return `<div class="duel-row"><span>${k}</span><div class="bars">
+      <div class="bar"><em>설날</em><div class="track"><div class="fill" style="width:${a/m*100}%;background:var(--seol)"></div></div><b>${f(a)}</b></div>
+      <div class="bar"><em>추석</em><div class="track"><div class="fill" style="width:${b/m*100}%;background:var(--chu)"></div></div><b>${f(b)}</b></div>
+    </div></div>`;}).join('');
+  const meta = R.creatives, mS = sum(meta,'spend'), mR = sum(meta,'revenue');
+  $('#ov-kpis').innerHTML = [
+    ['총 광고비 (추석)', won(c.spend), `설날 대비 ${deltaTag(dS,false)}`],
+    ['총 전환매출 (추석)', eok(c.revenue)+'원', `설날 대비 ${deltaTag(dR)}`],
+    ['ROAS (추석)', roasP(rc), `설날 ${roasP(rs)} · ${deltaTag(dRo)}`],
+    ['Meta 소재 ROAS', roasP(mR/mS), `소재 ${meta.length}개 · 광고비 ${eok(mS)}원`]
+  ].map(([k,v,c])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="c">${c}</div></div>`).join('');
+}
+$('#ov-ins').innerHTML = R.insights.map(t=>`<li>${t}</li>`).join('');
+function renderMix(){
+  const c = R.channels.chu;
+  const colors = ['#13293D','#C8892F','#4F7398','#1E7F64','#D9B67A'];
+  mk('c-mix',{type:'doughnut',data:{labels:c.map(x=>x.name),datasets:[{data:c.map(x=>x.revenue),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+    options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right'},tooltip:{callbacks:{label:t=>`${t.label}: ${eok(t.raw)}원 (${pct(t.raw/sum(c,'revenue'))})`}}}}});
+}
+document.querySelectorAll('#ov-basis button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#ov-basis button').forEach(x=>x.classList.toggle('on',x===b)); renderOverview(b.dataset.v);
+});
+
+/* ---------- 매체별 ---------- */
+function renderChannels(){
+  const names = R.channels.chu.map(x=>x.name.replace('네이버 브랜드검색/신제품검색','브랜드검색').replace('모비온 (리타겟팅)','모비온').replace('네이버 ',''));
+  const bar = (id,key) => mk(id,{type:'bar',data:{labels:names,datasets:[
+      {label:'설날',data:R.channels.seol.map(x=>x[key]/1e6),backgroundColor:css('--seol'),borderRadius:4},
+      {label:'추석',data:R.channels.chu.map(x=>x[key]/1e6),backgroundColor:css('--chu'),borderRadius:4}]},
+    options:{maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:t=>`${t.dataset.label}: ${won(t.raw*1e6)}`}}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#EEF1EF'},ticks:{callback:v=>v.toLocaleString()}}}}});
+  bar('c-ch-spend','spend'); bar('c-ch-rev','revenue');
+  const S = R.channels.seol, C = R.channels.chu;
+  let h = `<thead><tr><th>매체</th><th>설날 광고비</th><th>추석 광고비</th><th>설날 매출</th><th>추석 매출</th><th>설날 ROAS</th><th>추석 ROAS</th><th>ROAS 변화</th></tr></thead><tbody>`;
+  C.forEach((c,i)=>{ const s=S[i], rs=s.revenue/s.spend, rc=c.revenue/c.spend;
+    h += `<tr><td>${c.name}</td><td>${won(s.spend)}</td><td>${won(c.spend)}</td><td>${won(s.revenue)}</td><td>${won(c.revenue)}</td><td>${roasP(rs)}</td><td><b>${roasP(rc)}</b></td><td>${deltaTag(chg(rs,rc))}</td></tr>`;});
+  const ts=totals('seol','all'), tc=totals('chu','all');
+  h += `</tbody><tfoot><tr><td>합계</td><td>${won(ts.spend)}</td><td>${won(tc.spend)}</td><td>${won(ts.revenue)}</td><td>${won(tc.revenue)}</td><td>${roasP(ts.revenue/ts.spend)}</td><td>${roasP(tc.revenue/tc.spend)}</td><td>${deltaTag(chg(ts.revenue/ts.spend,tc.revenue/tc.spend))}</td></tr></tfoot>`;
+  $('#t-ch').innerHTML = h;
+}
+
+/* ---------- 일자별 ---------- */
+function renderDaily(season){
+  const d = R.daily[season];
+  $('#dy-title').textContent = (season==='chu'?'추석 ':'설날 ') + (season==='chu'?R.meta.chu:R.meta.seol);
+  mk('c-daily',{data:{labels:d.map(x=>x.date.slice(5).replace('-','/')),datasets:[
+    {type:'bar',label:'Meta 매출',data:d.map(x=>x.meta_r/1e6),backgroundColor:'#13293D',stack:'r',order:2},
+    {type:'bar',label:'네이버 매출',data:d.map(x=>x.naver_r/1e6),backgroundColor:'#5FA88F',stack:'r',order:2},
+    {type:'bar',label:'모비온 매출',data:d.map(x=>x.mob_r/1e6),backgroundColor:'#D9B67A',stack:'r',order:2},
+    {type:'line',label:'합계 광고비',data:d.map(x=>(x.meta_s+x.naver_s+x.mob_s)/1e6),borderColor:css('--bad'),backgroundColor:css('--bad'),yAxisID:'y2',tension:.3,pointRadius:0,borderWidth:2,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{tooltip:{callbacks:{title:t=>`${d[t[0].dataIndex].date} (${d[t[0].dataIndex].d})`,label:t=>`${t.dataset.label}: ${won(t.raw*1e6)}`}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:0,autoSkipPadding:12}},
+        y:{stacked:true,title:{display:true,text:'매출 (백만원)'},grid:{color:'#EEF1EF'}},
+        y2:{position:'right',title:{display:true,text:'광고비 (백만원)'},grid:{display:false}}}}});
+}
+function renderOverlay(){
+  const toMap = arr => Object.fromEntries(arr.map(x=>[parseInt(x.d.replace('D-','')), (x.meta_r+x.naver_r+x.mob_r)/1e6]));
+  const a = toMap(R.daily.chu), b = toMap(R.daily.seol);
+  const maxD = Math.max(...Object.keys(a).map(Number), ...Object.keys(b).map(Number));
+  const labels = []; for(let i=maxD;i>=0;i--) labels.push(i);
+  mk('c-overlay',{type:'line',data:{labels:labels.map(i=>'D-'+i),datasets:[
+    {label:'추석 매출',data:labels.map(i=>a[i]??null),borderColor:css('--chu'),backgroundColor:css('--chu-soft'),fill:true,tension:.3,pointRadius:0,borderWidth:2},
+    {label:'설날 매출',data:labels.map(i=>b[i]??null),borderColor:css('--seol'),tension:.3,pointRadius:0,borderWidth:2}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},spanGaps:true,
+      plugins:{tooltip:{callbacks:{label:t=>t.raw==null?'':`${t.dataset.label}: ${won(t.raw*1e6)}`}}},
+      scales:{x:{grid:{display:false},ticks:{maxRotation:0,autoSkipPadding:14}},y:{title:{display:true,text:'매출 (백만원)'},grid:{color:'#EEF1EF'}}}}});
+}
+document.querySelectorAll('#dy-season button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#dy-season button').forEach(x=>x.classList.toggle('on',x===b)); renderDaily(b.dataset.v);
+});
+
+/* ---------- 소재 성과 ---------- */
+const CR = R.creatives;
+const METRICS = {
+  ctr:{label:'클릭률',fmt:v=>pct(v,2)},
+  roas:{label:'ROAS',fmt:roasP},
+  revenue:{label:'매출액',fmt:v=>eok(v)+'원'}
+};
+const shortSet = s => s.replace(/^삼진어묵_/,'').replace(/\s*\(.*\)\s*$/,'');
+function thumbHTML(x){
+  const local = `img/${x.creative_id}.jpg`;
+  return `<button class="thumb" data-cid="${x.creative_id}" aria-label="${x.name} 크게 보기">
+    <span class="ph">${x.video?'영상':'이미지'}<br>썸네일 없음</span>
+    <img src="${local}" alt="" loading="lazy" onerror="if(!this.dataset.r){this.dataset.r=1;this.src=${JSON.stringify(x.thumb_remote).replace(/"/g,'&quot;')}}else{this.remove()}">
+    ${x.video?'<span class="play"></span>':''}</button>`;
+}
+function itemHTML(x,i,metric,maxV){
+  const m = METRICS[metric];
+  const others = Object.keys(METRICS).filter(k=>k!==metric).map(k=>`${METRICS[k].label} <b>${METRICS[k].fmt(x[k])}</b>`).join('');
+  return `<div class="item"><div class="no">${i+1}</div>${thumbHTML(x)}
+    <div class="info"><div class="nm" title="${x.name}">${x.video?'<span class="tag v">영상</span>':'<span class="tag i">이미지</span>'}${x.name}</div>
+      <div class="as" title="${x.adset}">${shortSet(x.adset)}</div>
+      <div class="main-m"><b>${m.fmt(x[metric])}</b><em>${m.label}</em></div>
+      <div class="meter"><i style="width:${maxV?Math.max(2,x[metric]/maxV*100):0}%"></i></div>
+      <div class="minis">${others}<span>광고비 <b>${eok(x.spend)}원</b></span>${x.video&&x.hook!=null?`<span>Hook <b>${pct(x.hook)}</b></span><span>Hold <b>${pct(x.hold)}</b></span>`:''}</div>
+    </div></div>`;
+}
+function renderRank(){
+  const metric = document.querySelector('#cr-metric .on').dataset.v;
+  const min = +$('#cr-min').value;
+  const pool = CR.filter(x=>x.spend>=min);
+  const best = [...pool].sort((a,b)=>b[metric]-a[metric]).slice(0,5);
+  const worst = [...pool].sort((a,b)=>a[metric]-b[metric]).slice(0,5);
+  const maxV = Math.max(...pool.map(x=>x[metric]));
+  $('#cr-best').innerHTML = best.map((x,i)=>itemHTML(x,i,metric,maxV)).join('');
+  $('#cr-worst').innerHTML = worst.map((x,i)=>itemHTML(x,i,metric,maxV)).join('');
+  const lbl = `${METRICS[metric].label} 기준 · 대상 ${pool.length}개`;
+  $('#cr-best-lbl').textContent = lbl; $('#cr-worst-lbl').textContent = lbl;
+  $('#cr-sub').textContent = `추석 시즌 ${R.meta.chu} · 광고비 발생 소재 ${CR.length}개 중 최소 광고비 조건을 넘는 소재로 순위를 매겼습니다.`;
+}
+document.querySelectorAll('#cr-metric button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#cr-metric button').forEach(x=>x.classList.toggle('on',x===b)); renderRank();
+});
+$('#cr-min').onchange = renderRank;
+
+function renderVideo(){
+  const v = CR.filter(x=>x.video && x.impressions>=1000).sort((a,b)=>b.hook-a.hook);
+  const lab = x => x.name.replace(/^0902-0921_Cgift_/,'').replace(/^전환_/,'').replace('full-course meal _n_','').replace('_n_',' ');
+  mk('c-hook',{type:'bubble',data:{datasets:[{label:'영상 소재',data:v.map(x=>({x:x.hook*100,y:x.hold*100,r:Math.max(5,Math.sqrt(x.revenue/1e6)*2.2),_x:x})),
+    backgroundColor:v.map(x=>x.roas>=30?'rgba(200,137,47,.55)':'rgba(79,115,152,.45)'),borderColor:v.map(x=>x.roas>=30?css('--chu'):css('--seol')),borderWidth:1.5}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:t=>{const x=t.raw._x;return [lab(x),`Hook ${pct(x.hook)} · Hold ${pct(x.hold)}`,`ROAS ${roasP(x.roas)} · 매출 ${eok(x.revenue)}원`];}}}},
+      scales:{x:{title:{display:true,text:'Hook Rate (%)'},grid:{color:'#EEF1EF'},suggestedMin:15,suggestedMax:40},
+        y:{title:{display:true,text:'Hold Rate (%)'},grid:{color:'#EEF1EF'},suggestedMin:15,suggestedMax:45}}}});
+  let h = `<thead><tr><th>영상 소재</th><th>노출</th><th>Hook</th><th>Hold</th><th>ROAS</th><th>매출</th></tr></thead><tbody>`;
+  v.forEach(x=>h+=`<tr><td class="l" title="${x.name}">${lab(x)}</td><td>${num(x.impressions)}</td><td><b>${pct(x.hook)}</b></td><td><b>${pct(x.hold)}</b></td><td>${roasP(x.roas)}</td><td>${eok(x.revenue)}원</td></tr>`);
+  const vs=CR.filter(x=>x.video), I=sum(vs,'impressions');
+  h += `</tbody><tfoot><tr><td>영상 전체</td><td>${num(I)}</td><td>${pct(sum(vs,'v3')/I)}</td><td>${pct(sum(vs,'thruplay')/sum(vs,'v3'))}</td><td>${roasP(sum(vs,'revenue')/sum(vs,'spend'))}</td><td>${eok(sum(vs,'revenue'))}원</td></tr></tfoot>`;
+  $('#t-video').innerHTML = h;
+}
+
+const COLS = [
+  ['name','소재','l'],['spend','광고비'],['revenue','전환매출'],['roas','ROAS'],['purchases','구매'],
+  ['impressions','노출'],['clicks','클릭'],['ctr','클릭률'],['hook','Hook'],['hold','Hold']];
+let sortKey='revenue', sortAsc=false;
+function fmtCell(k,x){
+  const v=x[k];
+  if(k==='name') return `${x.video?'<span class="tag v">영상</span>':'<span class="tag i">이미지</span>'}${v}`;
+  if(v==null) return '<span class="muted">-</span>';
+  if(k==='spend'||k==='revenue') return won(v);
+  if(k==='roas') return roasP(v);
+  if(k==='ctr') return pct(v,2);
+  if(k==='hook'||k==='hold') return pct(v);
+  return num(v);
+}
+function renderTable(){
+  const rows=[...CR].sort((a,b)=>{const A=a[sortKey]??-1,B=b[sortKey]??-1;return (typeof A==='string'?A.localeCompare(B):A-B)*(sortAsc?1:-1);});
+  let h='<thead><tr>'+COLS.map(([k,l,c])=>`<th class="sort ${c||''} ${k===sortKey?'on'+(sortAsc?' asc':''):''}" data-k="${k}" tabindex="0">${l}</th>`).join('')+'</tr></thead><tbody>';
+  rows.forEach(x=>h+='<tr>'+COLS.map(([k,,c])=>`<td class="${c||''}">${fmtCell(k,x)}</td>`).join('')+'</tr>');
+  const S=sum(CR,'spend'),Rv=sum(CR,'revenue'),I=sum(CR,'impressions'),C=sum(CR,'clicks');
+  h+=`</tbody><tfoot><tr><td>합계 ${CR.length}개</td><td>${won(S)}</td><td>${won(Rv)}</td><td>${roasP(Rv/S)}</td><td>${num(sum(CR,'purchases'))}</td><td>${num(I)}</td><td>${num(C)}</td><td>${pct(C/I,2)}</td><td></td><td></td></tr></tfoot>`;
+  $('#t-cr').innerHTML=h;
+  document.querySelectorAll('#t-cr th.sort').forEach(th=>{
+    const go=()=>{const k=th.dataset.k; if(k===sortKey) sortAsc=!sortAsc; else {sortKey=k; sortAsc=k==='name';} renderTable();};
+    th.onclick=go; th.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};
+  });
+}
+
+/* lightbox */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.thumb'); const lb=$('#lb');
+  if(t){ const x=CR.find(c=>c.creative_id===t.dataset.cid); const img=t.querySelector('img');
+    if(!img) return;
+    $('#lb-img').src=img.src; $('#lb-cap').innerHTML=`<b>${x.name}</b>ROAS ${roasP(x.roas)} · 클릭률 ${pct(x.ctr,2)} · 매출 ${won(x.revenue)}`;
+    lb.classList.add('on'); return; }
+  if(e.target.closest('#lb')) lb.classList.remove('on');
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('#lb').classList.remove('on'); });
+
+/* ---------- 네이버 ---------- */
+function renderNaver(season){
+  const d = R.naver[season];
+  let h='<thead><tr><th>캠페인 유형</th><th class="l">광고그룹</th><th>광고비</th><th>노출</th><th>클릭</th><th>클릭률</th><th>전환</th><th>전환매출</th><th>ROAS</th></tr></thead><tbody>';
+  d.forEach(x=>h+=`<tr><td>${x.type}</td><td class="l">${x.group}</td><td>${won(x.spend)}</td><td>${num(x.imps)}</td><td>${num(x.clicks)}</td><td>${x.imps?pct(x.clicks/x.imps,2):'-'}</td><td>${num(x.conv)}</td><td>${won(x.revenue)}</td><td>${x.spend?roasP(x.revenue/x.spend):'<span class="muted">정액</span>'}</td></tr>`);
+  const S=sum(d,'spend'),Rv=sum(d,'revenue');
+  h+=`</tbody><tfoot><tr><td colspan="2">합계</td><td>${won(S)}</td><td>${num(sum(d,'imps'))}</td><td>${num(sum(d,'clicks'))}</td><td>${pct(sum(d,'clicks')/sum(d,'imps'),2)}</td><td>${num(sum(d,'conv'))}</td><td>${won(Rv)}</td><td>${roasP(Rv/S)}</td></tr></tfoot>`;
+  $('#t-nv').innerHTML=h;
+}
+document.querySelectorAll('#nv-season button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#nv-season button').forEach(x=>x.classList.toggle('on',x===b)); renderNaver(b.dataset.v);
+});
+
+/* ---------- 라우팅 ---------- */
+const rendered = {};
+const renderers = {
+  overview:()=>{renderOverview('all');renderMix();},
+  channels:renderChannels,
+  daily:()=>{renderDaily('chu');renderOverlay();},
+  creatives:()=>{renderRank();renderVideo();renderTable();},
+  naver:()=>renderNaver('chu'),
+  business:()=>{},
+  seollal27:()=>{},
+  budget:()=>{}
+};
+function route(){
+  const p = (location.hash||'#overview').slice(1);
+  const page = renderers[p] ? p : 'overview';
+  document.querySelectorAll('.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+page));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===page));
+  if(!rendered[page]){ renderers[page](); rendered[page]=true; }
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* 방향키 페이지 이동: 버튼에 포커스가 남아 있어도 동작 */
+window.addEventListener('keydown', e => {
+  if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const target = e.target;
+  if (target && (target.isContentEditable || target.closest('input, textarea, select, [contenteditable], [role="slider"], [role="textbox"]'))) return;
+  if (document.getElementById('lb')?.classList.contains('on')) return;
+  const pages = Array.from(document.querySelectorAll('#nav a[data-p]'), a => a.dataset.p);
+  const current = decodeURIComponent(location.hash.slice(1)) || 'overview';
+  const index = pages.indexOf(current);
+  const next = index + (e.key === 'ArrowRight' ? 1 : -1);
+  if (index < 0 || next < 0 || next >= pages.length) return;
+  e.preventDefault();
+  e.stopPropagation();
+  location.hash = '#' + pages[next];
+}, true);
+
+route();
+</script>
 </body>
 </html>
